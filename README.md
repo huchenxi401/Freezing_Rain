@@ -33,10 +33,10 @@ conda install -c conda-forge pandas requests numpy scipy matplotlib seaborn \
 
 **Required Python packages:**
 - Data processing: `pandas`, `numpy`, `scipy`
-- Spatial analysis: `geopandas`, `shapely`, `scikit-learn`
+- Spatial analysis: `geopandas`, `shapely`, `scikit-learn`, `shapely`, `statsmodels`
 - Climate data: `xarray`, `pygrib`
 - Visualization: `matplotlib`, `seaborn`
-- Utilities: `requests`, `json`, `time`, `os`, `regex`, `datetime`, `typing`, `concurrent.futures`, `pathlib`
+- Utilities: `requests`, `json`, `time`, `os`, `regex`, `datetime`, `typing`, `concurrent.futures`, `pathlib`, `tqdm`
 ---
 
 ## Data
@@ -61,7 +61,7 @@ The `data/` folder contains raw and processed datasets ready for analysis:
 
 Due to file size limitations, some datasets must be downloaded separately:
 
-#### ERA5 Reanalysis Data
+#### ERA5 2m temperature Data
 - **Description**: Hourly 2-meter temperature data for December–February (1996–2025)
 - **Source**: [Copernicus Climate Data Store](https://cds.climate.copernicus.eu/datasets/reanalysis-era5-single-levels?tab=download)
 - **Required files**: 
@@ -69,7 +69,44 @@ Due to file size limitations, some datasets must be downloaded separately:
   - `2m_tem_DJF_2011_2025.grib`
 - **Format**: GRIB
 - **Placement**: Save in `data/` folder
-- **Note**: Required for Main Figure 1d Extended Data Figures S2 and S5
+- **Note**: Required for Main Figure 1d and 4d, Extended Data Figures S3, S7, and S10d
+
+#### ERA5 850hPa temperature Data
+- **Description**: Hourly 850hPa temperature data for December–February (1996–2025)
+- **Source**: [Copernicus Climate Data Store](https://cds.climate.copernicus.eu/datasets/reanalysis-era5-pressure-levels?tab=download)
+- **Required files**: 
+  - `850hPa_tem_DJF_1996_2010.grib`
+  - `850hPa_tem_DJF_2011_2025.grib`
+- **Format**: GRIB
+- **Placement**: Save in `data/` folder
+- **Note**: Required for Main Figure 4d, Extended Data Figure S10d
+
+#### ERA5 250hPa wind Data
+- **Description**: Monthly 250hPa wind data for December–February (1996–2025)
+- **Source**: [Copernicus Climate Data Store](https://cds.climate.copernicus.eu/datasets/reanalysis-era5-pressure-levels-monthly-means?tab=download)
+- **Required files**: 
+  - `250hPa_monthly_wind_DJF_1996_2025.nc`
+- **Format**: NETCDF
+- **Placement**: Save in `data/` folder
+- **Note**: Required for Main Figure 4a, Extended Data Figure S10a
+
+#### ERA5 vertical temperature Data
+- **Description**: Monthly temperature data from 1000hPa to 500hPa for December–February (1996–2025)
+- **Source**: [Copernicus Climate Data Store](https://cds.climate.copernicus.eu/datasets/reanalysis-era5-pressure-levels-monthly-means?tab=download)
+- **Required files**: 
+  - `Tem_monthly_DJF_1996-2025.nc`
+- **Format**: NETCDF
+- **Placement**: Save in `data/` folder
+- **Note**: Required for Main Figure 4b, Extended Data Figure S10b
+
+#### ERA5 vertical humidity Data
+- **Description**: Monthly specific humidity data from 1000hPa to 500hPa for December–February (1996–2025)
+- **Source**: [Copernicus Climate Data Store](https://cds.climate.copernicus.eu/datasets/reanalysis-era5-pressure-levels-monthly-means?tab=download)
+- **Required files**: 
+  - `Q_monthly_DJF_1996-2025.nc`
+- **Format**: NETCDF
+- **Placement**: Save in `data/` folder
+- **Note**: Required for Main Figure 4c, Extended Data Figure S10c
 
 #### NOAA nClimGrid Data
 - **Description**: Gridded monthly temperature data
@@ -77,7 +114,7 @@ Due to file size limitations, some datasets must be downloaded separately:
 - **Required files**: 'nclimgrid-tavg.nc'
 - **Format**: NETCDF 
 - **Placement**: Save in `data/` folder
-- **Note**: Required for Extended Data Figures S2 and S5
+- **Note**: Required for Extended Data Figures S3 and S7
 ---
 
 ## Code
@@ -114,10 +151,10 @@ Large language models (GPT-4 via OpenRouter API) were used solely for extracting
 - `random_select_case_414county.py`: Randomly selects one event per emerging hotspot county (414 counties)
 
 #### Validation Analysis
-- `FigureS10ab.py`: Compares LLM-extracted vs. manual measurements for 500 random events
+- `FigureS13ab.py`: Compares LLM-extracted vs. manual measurements for 500 random events
   - **Output**: Extended Data Figure 10a (ice thickness R²), 10b (damage severity accuracy)
   
-- `FigureS10cd.py`: Compares LLM-extracted vs. manual measurements for 414 county samples
+- `FigureS13cd.py`: Compares LLM-extracted vs. manual measurements for 414 county samples
   - **Output**: Extended Data Figure 10c (ice thickness R²), 10d (damage severity accuracy)
 
 **Validation Results**: High agreement between LLM extraction and manual annotation (R² > 0.95 for continuous variables, accuracy > 94% for categorical classification)
@@ -146,30 +183,54 @@ Large language models (GPT-4 via OpenRouter API) were used solely for extracting
 - `Figure3b.py`: Change in February thick-ice events (>0.25 inches), events yr⁻¹
 - `Figure3cd.py`: Change in February Medium and High damage severity events, events yr⁻¹
 
+**Figure 4: Physical mechanisms driving the southward redistribution and February intensification**
+- `Figure4a.py`: Change in February 250-hPa meridional wind variability (difference in standard deviation, 2011–2025 minus 1996–2010) and extreme northerly wind speed difference (95th percentile difference).
+  - *Requires external ERA5 data*
+- `Figure4b.py`: February vertical temperature profiles averaged over 414 emerging hotspot counties (1996–2010 vs. 2011–2025)
+  - *Requires external ERA5 data*
+- `Figure4c.py`: Change in February low- to mid-tropospheric (850–500 hPa) mean specific humidity (1996–2010 vs. 2011–2025)
+  - *Requires external ERA5 data*
+- `Figure4d.py`: Change in February freezing rain favorable hours (FRFH, 2-m temperature < -1°C, 850-hPa temperature > 1°C) (1996–2010 vs. 2011–2025)
+  - *Requires external ERA5 data*
+
 #### Extended Data Figures
 **Distribution of Temporal trends:**
 - `FigureS1.py`: Distribution of trends in annual event counts (1996–2025), events yr⁻²
-- `FigureS3.py`: Distribution of trends in February event counts (1996–2025), events yr⁻²
+- `FigureS4.py`: Distribution of trends in February event counts (1996–2025), events yr⁻²
 
-**Temporal trends:**
-- `FigureS4.py`: Annual trends for December and January events
-- `FigureS6a.py`: Annual trend of February long-duration events (>12 hr)
-- `FigureS6b.py`: Annual trend of February thick-ice events (>0.25 inches)
-- `FigureS6cd.py`: Annual trends of February Medium and High damage events
-- `FigureS7a.py`: Annual trend of mean event duration (1996–2025)
-- `FigureS7b.py`: Annual trend of mean ice thickness (1996–2025)
+**Field significance tests:**
+- `FigureS2.py`: Permutation-based field significance test to Annual freezing rain frequency changes for four progressively focused subsets
+- `FigureS5.py`: Permutation-based field significance test to February freezing rain frequency changes for four progressively focused subsets
 
 **Winter temperature patterns:**
-- `FigureS2a-d.py`: Winter (DJF) warming trends and patterns from ERA5 and NOAA nClimGrid
+- `FigureS3a-d.py`: Winter (DJF) warming trends and patterns from ERA5 and NOAA nClimGrid
   - *Requires external ERA5 and nClimGrid data*
-- `FigureS5a-d.py`: February warming trends and patterns from ERA5 and NOAA nClimGrid
+- `FigureS7a-d.py`: February warming trends and patterns from ERA5 and NOAA nClimGrid
   - *Requires external ERA5 and nClimGrid data*
 
+**Temporal trends:**
+- `FigureS6.py`: Annual trends for December and January events
+- `FigureS8a.py`: Annual trend of February long-duration events (>12 hr)
+- `FigureS8b.py`: Annual trend of February thick-ice events (>0.25 inches)
+- `FigureS8cd.py`: Annual trends of February Medium and High damage events
+- `FigureS9a.py`: Annual trend of mean event duration (1996–2025)
+- `FigureS9b.py`: Annual trend of mean ice thickness (1996–2025)
+
+**Correlation between atmospheric drivers and February freezing rain frequency**
+- `FigureS10a.py`: Annual February freezing rain events (events yr⁻¹) in the 414 hotspot counties versus northern U.S. February 250-hPa wind speed anomaly (40–50°N, 80–120W averaged)
+  - *Requires external ERA5 data*
+- `FigureS10b.py`: Annual February freezing rain events (events yr⁻¹) in the 414 hotspot counties versus county-specific February 850–1000 hPa temperature difference anomaly
+  - *Requires external ERA5 data*
+- `FigureS10c.py`: Annual February freezing rain events (events yr⁻¹) in the 414 hotspot counties versus county-specific February 850–500 hPa specific humidity anomaly
+  - *Requires external ERA5 data*
+- `FigureS10d.py`: Annual February freezing rain events (events yr⁻¹) in the 414 hotspot counties versus county-specific February FRFH
+  - *Requires external ERA5 data*
+
 **Exposure and vulnerability:**
-- `FigureS8a.py`: County-level population distribution (2024 U.S. Census)
-- `FigureS8b.py`: Dominant vegetation types in February
-- `FigureS8c.py`: Mean February Leaf Area Index (LAI, 1996–2025)
-- `FigureS8d.py`: Dominant crop types by county (2022 USDA Census) and
+- `FigureS11a.py`: County-level population distribution (2024 U.S. Census)
+- `FigureS11b.py`: Dominant vegetation types in February
+- `FigureS11c.py`: Mean February Leaf Area Index (LAI, 1996–2025)
+- `FigureS11d.py`: Dominant crop types by county (2022 USDA Census) and
   - Harvested area (acres) for major crops in February emerging hotspot counties compared to historical high-baseline counties
   - Also generates data for Extended Data Table 1
 
@@ -268,6 +329,12 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
   - All analysis code for main and extended data figures
   - LLM extraction and validation scripts
 
+- **v1.0.1** (2025-12-09): Second version 
+  - Add figure4a-d.py
+  - Add figureS2 and S5.py
+  - Add FigureS10a-d.py
+  - Adjust figure order
+
 ---
 
-*Last updated: Nov/10/2025
+*Last updated: Dec/09/2025
