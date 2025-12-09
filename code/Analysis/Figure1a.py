@@ -351,7 +351,7 @@ def create_maps_diff(merged_gdf, states_gdf, counties_alaska, states_alaska, ala
     
     if len(significant_change_geoids) > 0:
         significant_change_counties = merged_gdf[merged_gdf['GEOID'].isin(significant_change_geoids)]
-        significant_change_counties.boundary.plot(ax=ax, color='gold', linewidth=0.4)
+        significant_change_counties.boundary.plot(ax=ax, color='gold', linewidth=0.3)
 
     if 'significant' in merged_gdf.columns:
         significant_counties = merged_gdf[merged_gdf['significant'] == True]
@@ -359,12 +359,27 @@ def create_maps_diff(merged_gdf, states_gdf, counties_alaska, states_alaska, ala
             significant_counties_copy = significant_counties.copy()
             significant_counties_copy['centroid'] = significant_counties_copy.geometry.centroid
 
-            centroids = significant_counties_copy['centroid']
-            x_coords = [point.x for point in centroids]
-            y_coords = [point.y for point in centroids]
+            light_sig = significant_counties_copy[
+                (significant_counties_copy['EVENT_COUNT'] >= -0.6) & 
+                (significant_counties_copy['EVENT_COUNT'] <= 0.6)
+            ]
 
-            ax.plot(x_coords, y_coords, 'k.', markersize=2, markerfacecolor='black', 
-                markeredgewidth=0)
+            dark_sig = significant_counties_copy[
+                (significant_counties_copy['EVENT_COUNT'] < -0.6) | 
+                (significant_counties_copy['EVENT_COUNT'] > 0.6)
+            ]
+
+            if len(light_sig) > 0:
+                x_black = [point.x for point in light_sig['centroid']]
+                y_black = [point.y for point in light_sig['centroid']]
+                ax.plot(x_black, y_black, 'k.', markersize=1.5, markerfacecolor='black', 
+                        markeredgewidth=0, zorder=10)
+
+            if len(dark_sig) > 0:
+                x_white = [point.x for point in dark_sig['centroid']]
+                y_white = [point.y for point in dark_sig['centroid']]
+                ax.plot(x_white, y_white, 'k.', markersize=1.5, markerfacecolor='white', 
+                        markeredgecolor='black', markeredgewidth=0, zorder=10)
    
     ax.set_xlim(-125, -65)
     ax.set_ylim(25, 50)
@@ -504,4 +519,5 @@ def main():
         traceback.print_exc()
 
 if __name__ == "__main__":
+
     main()
