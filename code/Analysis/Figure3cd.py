@@ -344,12 +344,27 @@ def create_maps_diff(merged_gdf, states_gdf, counties_alaska, states_alaska, ala
             significant_counties_copy = significant_counties.copy()
             significant_counties_copy['centroid'] = significant_counties_copy.geometry.centroid
 
-            centroids = significant_counties_copy['centroid']
-            x_coords = [point.x for point in centroids]
-            y_coords = [point.y for point in centroids]
+            light_sig = significant_counties_copy[
+                (significant_counties_copy['EVENT_COUNT'] >= -diff_max/2) & 
+                (significant_counties_copy['EVENT_COUNT'] <= diff_max/2)
+            ]
 
-            ax.plot(x_coords, y_coords, 'k.', markersize=2, markerfacecolor='black', 
-                markeredgewidth=0)
+            dark_sig = significant_counties_copy[
+                (significant_counties_copy['EVENT_COUNT'] < -diff_max/2) | 
+                (significant_counties_copy['EVENT_COUNT'] > diff_max/2)
+            ]
+
+            if len(light_sig) > 0:
+                x_black = [point.x for point in light_sig['centroid']]
+                y_black = [point.y for point in light_sig['centroid']]
+                ax.plot(x_black, y_black, 'k.', markersize=1.5, markerfacecolor='black', 
+                        markeredgewidth=0, zorder=10)
+
+            if len(dark_sig) > 0:
+                x_white = [point.x for point in dark_sig['centroid']]
+                y_white = [point.y for point in dark_sig['centroid']]
+                ax.plot(x_white, y_white, 'k.', markersize=1.5, markerfacecolor='white', 
+                        markeredgecolor='black', markeredgewidth=0, zorder=10)
             
     
     states_gdf.boundary.plot(ax=ax, color='black', linewidth=0.8)
@@ -483,4 +498,5 @@ def main():
         traceback.print_exc()
 
 if __name__ == "__main__":
+
     main()
