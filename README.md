@@ -111,7 +111,8 @@ Due to file size limitations, some datasets must be downloaded separately:
 #### NOAA nClimGrid Data
 - **Description**: Gridded monthly temperature data
 - **Source**: [NOAA NCEI](https://www.drought.gov/data-maps-tools/gridded-climate-datasets-noaas-nclimgrid-monthly)
-- **Required files**: 'nclimgrid-tavg.nc'
+- **Required files**: 
+  - `nclimgrid-tavg.nc`
 - **Format**: NETCDF 
 - **Placement**: Save in `data/` folder
 - **Note**: Required for Extended Data Figures S3 and S7
