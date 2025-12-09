@@ -303,11 +303,12 @@ def main():
     for month in [2]:
         month_name = month_names[month]
 
-        output_file = f"{output_dir}variability_difference_{month_name}.png"
+        output_file = f"figure4a.png"
         plot_difference(ds, monthly_data_early, monthly_data_late, month,
                        counties_gdf, states_gdf, coastline_gdf, output_file, hotspots_df=hotspots_df)
 
     ds.close()
 
 if __name__ == "__main__":
+
     main()
