@@ -235,7 +235,7 @@ def main():
 
     era5_file = "../../data/Tem_monthly_DJF_1996-2025.nc"
     hotspot_file = "../../data/february_emerging_hotspots.xlsx"
-    output_file = './vertical_Feb_temperature_profile_hotspot_counties.png'
+    output_file = './figure4b.png'
 
     N_BOOTSTRAP = 10000  
 
@@ -289,4 +289,5 @@ def main():
     
 
 if __name__ == "__main__":
+
     main()
